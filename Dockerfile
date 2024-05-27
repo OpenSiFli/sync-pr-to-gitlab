@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 # especially in CI environments like GitHub Actions, where Git commands are run in the `/github/workspace`.
 # Without this configuration, Git might refuse to operate in the workspace directory due to security policies.
 RUN git config --system --add safe.directory /github/workspace
+RUN git config --global pull.ff only
 
 COPY sync_pr_to_gitlab/github_pr_to_internal_pr.py /
 

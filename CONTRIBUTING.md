@@ -81,10 +81,11 @@ You can do this by commenting out specific lines in the python script within the
     #     return
     ```
 
-2. **Repository Name Placeholder**: For testing purposes, you might need to simulate actions against a specific repository's data. Comment out the line fetching the repository's full name to avoid conflicts or errors during this phase.
+2. **Repository Name Placeholder**: For testing purposes, you might need to simulate actions against a specific repository's data. Comment out the line fetching the repository's full name to avoid conflicts or errors during this phase. Instead, replace it with a known testing repository, like this:
 
-    ```py
-    # repo_fullname = event['repository']['full_name']  # Comment out for testing
+    ```python
+    # repo_fullname = event['repository']['full_name']        # Comment out for testing
+    repo_fullname = 'app-frameworks/actions-internal-test'    # Add this for testing
     ```
 
 By commenting out these lines, you'll be able to run your tests in a more controlled and isolated manner, simulating different conditions without affecting the actual repository or workflow.

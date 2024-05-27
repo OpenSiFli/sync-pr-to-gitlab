@@ -188,7 +188,6 @@ def main():
     pr_commit_id = pr_check_approver(pr_creator, pr_comments_url, pr_approve_labeller)
 
     repo_fullname = event['repository']['full_name']
-    repo_fullname = 'app-frameworks/actions-internal-test'
 
     pr_num = event['pull_request']['number']
     pr_head_branch = 'contrib/github_pr_' + str(pr_num)
