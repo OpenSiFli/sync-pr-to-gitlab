@@ -62,6 +62,7 @@ jobs:
           GIT_CONFIG_NAME: ${{ secrets.GIT_CONFIG_NAME }}
           GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
           JIRA_PROJECT: SOMEPROJECT
+          GITLAB_NAMESPACE: SOMENAMESPACE  # This is optional (defaults to 'espressif' if not present)
 ```
 
 ### Environment Variables and Secrets Configuration
@@ -70,14 +71,15 @@ The GitHub PR to GitLab MR Sync workflow requires configuring specific environme
 
 Below is a detailed table outlining the necessary configurations:
 
-| Variable/Secret    | Description                                                               | Requirement |
-| ------------------ | ------------------------------------------------------------------------- | ----------- |
-| `GITHUB_TOKEN`     | Automatically provided by GitHub to authorize actions.                    | Inherited   |
-| `GITLAB_URL`       | URL of the Espressif GitLab instance for API requests.                    | Mandatory   |
-| `GITLAB_TOKEN`     | Access token for creating MRs, comments, and updates in Espressif GitLab. | Mandatory   |
-| `GIT_CONFIG_NAME`  | Username for Git commits when syncing, usually a bot name.                | Mandatory   |
-| `GIT_CONFIG_EMAIL` | Email for Git commits when syncing, representing the bot email.           | Mandatory   |
-| `JIRA_PROJECT`     | The slug of the JIRA project where new issues will be created.            | Mandatory   |
+| Variable/Secret    | Description                                                                | Requirement |
+| ------------------ | -------------------------------------------------------------------------- | ----------- |
+| `GITHUB_TOKEN`     | Automatically provided by GitHub to authorize actions.                     | Inherited   |
+| `GITLAB_URL`       | URL of the Espressif GitLab instance for API requests.                     | Mandatory   |
+| `GITLAB_TOKEN`     | Access token for creating MRs, comments, and updates in Espressif GitLab.  | Mandatory   |
+| `GIT_CONFIG_NAME`  | Username for Git commits when syncing, usually a bot name.                 | Mandatory   |
+| `GIT_CONFIG_EMAIL` | Email for Git commits when syncing, representing the bot email.            | Mandatory   |
+| `JIRA_PROJECT`     | The slug of the JIRA project where new issues will be created.             | Mandatory   |
+| `GITLAB_NAMESPACE` | Namespace in GitLab where the project is located. Defaults to 'espressif'. | Optional    |
 
 ## Steps to Sync a PR (by user)
 

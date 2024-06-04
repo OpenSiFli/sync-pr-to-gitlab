@@ -17,6 +17,7 @@ from gitlab.exceptions import GitlabGetError
 GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
 GITLAB_URL = os.environ['GITLAB_URL']
 GITLAB_TOKEN = os.environ['GITLAB_TOKEN']
+GITLAB_NAMESPACE = os.environ.get('GITLAB_NAMESPACE', 'espressif')
 
 GITHUB_REMOTE = 'origin'
 GITLAB_REMOTE = 'gitlab'
@@ -60,7 +61,8 @@ def setup_project(repo_fullname, pr_base_branch):
     print('Connecting to GitLab...')
     gl = gitlab.Gitlab(url=GITLAB_URL, private_token=GITLAB_TOKEN)
     gl.auth()
-    gl_project_url = f'{GITLAB_URL[:URL_HDR_LEN]}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL[URL_HDR_LEN:]}/{repo_fullname}.git'
+    project_name = repo_fullname.split('/')[-1]
+    gl_project_url = f'{GITLAB_URL[:URL_HDR_LEN]}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL[URL_HDR_LEN:]}/{GITLAB_NAMESPACE}/{project_name}.git'
 
     git = Git('.')
 
@@ -208,7 +210,7 @@ def main():
 
     # Gitlab setup and cloning internal codebase
     gl = setup_project(repo_fullname, pr_base_branch)
-    project_gl = gl.projects.get(repo_fullname)
+    project_gl = gl.projects.get(f'{GITLAB_NAMESPACE}/{repo_fullname.split("/")[-1]}')
 
     if pr_label == LABEL_REBASE:
         sync_pr(pr_num, pr_head_branch, pr_commit_id, project_gl, pr_base_branch, pr_html_url, rebase_flag=True)
