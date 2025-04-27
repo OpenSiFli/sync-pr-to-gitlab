@@ -1,16 +1,16 @@
 <div align="center">
   <h1>GitHub PR to Gitlab MR Sync (GitHub Action)</h1>
-  <img src="docs/sync-to-gitlab.png" alt="GitHub PR to Gitlab MR Sync logo" width="400">
+
   <br>
   <br>
   <!-- GitHub Badges -->
-   <img alt="release" src="https://img.shields.io/github/v/release/espressif/sync-pr-to-gitlab" />
-   <img alt="codeql" src="https://github.com/espressif/sync-pr-to-gitlab/actions/workflows/github-code-scanning/codeql/badge.svg?branch=v1" />
+   <img alt="release" src="https://img.shields.io/github/v/release/OpenSifli/sync-pr-to-gitlab" />
+   <img alt="codeql" src="https://github.com/OpenSifli/sync-pr-to-gitlab/actions/workflows/github-code-scanning/codeql/badge.svg?branch=v1" />
 </div>
-GitHub PR to Gitlab MR Sync Action is a solution for one-way synchronization of GitHub PRs into Espressif Gitlab MRs.
+GitHub PR to Gitlab MR Sync Action is a solution for one-way synchronization of GitHub PRs into SiFli Gitlab MRs.
 <br>
 <br>
-This script automates the process of creating branches and PRs on the internal codebase of Espressif based on approved PRs on Github.
+This script automates the process of creating branches and PRs on the internal codebase of SiFli based on approved PRs on Github.
 
 <hr>
 
@@ -54,15 +54,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Sync approved PRs to internal codebase
-        uses: espressif/sync-pr-to-gitlab@v1
+        uses: OpenSiFli/sync-pr-to-gitlab@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLAB_URL: ${{ secrets.GITLAB_URL }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
           GIT_CONFIG_NAME: ${{ secrets.GIT_CONFIG_NAME }}
           GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
-          JIRA_PROJECT: SOMEPROJECT
-          GITLAB_NAMESPACE: SOMENAMESPACE  # This is optional (defaults to 'espressif' if not present)
+          GITLAB_NAMESPACE: SOMENAMESPACE  # This is optional (defaults to 'OpenSiFli' if not present)
 ```
 
 ### Environment Variables and Secrets Configuration
@@ -74,12 +73,11 @@ Below is a detailed table outlining the necessary configurations:
 | Variable/Secret    | Description                                                                | Requirement |
 | ------------------ | -------------------------------------------------------------------------- | ----------- |
 | `GITHUB_TOKEN`     | Automatically provided by GitHub to authorize actions.                     | Inherited   |
-| `GITLAB_URL`       | URL of the Espressif GitLab instance for API requests.                     | Mandatory   |
-| `GITLAB_TOKEN`     | Access token for creating MRs, comments, and updates in Espressif GitLab.  | Mandatory   |
+| `GITLAB_URL`       | URL of the SiFli GitLab instance for API requests.                         | Mandatory   |
+| `GITLAB_TOKEN`     | Access token for creating MRs, comments, and updates in SiFli GitLab.      | Mandatory   |
 | `GIT_CONFIG_NAME`  | Username for Git commits when syncing, usually a bot name.                 | Mandatory   |
 | `GIT_CONFIG_EMAIL` | Email for Git commits when syncing, representing the bot email.            | Mandatory   |
-| `JIRA_PROJECT`     | The slug of the JIRA project where new issues will be created.             | Mandatory   |
-| `GITLAB_NAMESPACE` | Namespace in GitLab where the project is located. Defaults to 'espressif'. | Optional    |
+| `GITLAB_NAMESPACE` | Namespace in GitLab where the project is located. Defaults to 'OpenSiFli'. | Optional    |
 
 ## Steps to Sync a PR (by user)
 
