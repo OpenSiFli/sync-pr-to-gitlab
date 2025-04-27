@@ -172,8 +172,8 @@ def main():
         print('Not running in GitHub action context, nothing to do')
         return
 
-    if not os.environ['GITHUB_REPOSITORY'].startswith('espressif/'):
-        print('Not an Espressif repo!')
+    if not os.environ['GITHUB_REPOSITORY'].startswith('OpenSiFli/'):
+        print('Not an OpenSiFli repo!')
         return
 
     # The path of the file with the complete webhook event payload. For example, /github/workflow/event.json.
