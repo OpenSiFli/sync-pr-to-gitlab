@@ -17,7 +17,7 @@ from gitlab.exceptions import GitlabGetError
 GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
 GITLAB_URL = os.environ['GITLAB_URL']
 GITLAB_TOKEN = os.environ['GITLAB_TOKEN']
-GITLAB_NAMESPACE = os.environ.get('GITLAB_NAMESPACE', 'espressif')
+GITLAB_NAMESPACE = os.environ.get('GITLAB_NAMESPACE', 'OpenSiFli')
 
 GITHUB_REMOTE = 'origin'
 GITLAB_REMOTE = 'gitlab'
@@ -203,9 +203,7 @@ def main():
 
     # Getting the PR title and body
     pr_title = event['pull_request']['title']
-    idx = pr_title.find(os.environ['JIRA_PROJECT'])  # Finding the JIRA issue tag
-    pr_title_desc = pr_title[0 : idx - 2] + ' (GitHub PR)'
-    pr_jira_issue = pr_title[idx:-1]
+    pr_title_desc = pr_title + ' (GitHub PR)'
     pr_body = str(event['pull_request']['body'])
 
     # Gitlab setup and cloning internal codebase
@@ -236,7 +234,6 @@ def main():
 
     print('Updating merge request description...')
     mr_desc = '## Description \n' + pr_body + '\n ##### (Add more info here)' + '\n## Related'
-    mr_desc += '\n* Closes ' + pr_jira_issue
     mr_desc += '\n* Merges ' + pr_html_url
     mr_desc += (
         '\n## Release notes (Mandatory)\n* [component/development area] <Please update release notes, do NOT remove GitHub PR pointer> (' + pr_html_url + ')'
