@@ -242,7 +242,8 @@ def main():
     mr.description = mr_desc
     mr.save()
 
-    notify_maintainers(pr_head_branch, pr_base_branch, project_gl, mr.iid)
+    # We don't need to notify the maintainers in the PR, Might be needed in the future, save it for TODO
+    # notify_maintainers(pr_head_branch, pr_base_branch, project_gl, mr.iid)
 
     print('Done with the workflow!')
 
