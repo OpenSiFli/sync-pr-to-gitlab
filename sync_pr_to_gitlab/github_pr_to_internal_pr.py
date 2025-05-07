@@ -59,10 +59,10 @@ def pr_check_forbidden_files(pr_files_url):
 
 def setup_project(repo_fullname, pr_base_branch):
     print('Connecting to GitLab...')
-    gl = gitlab.Gitlab(url=GITLAB_URL, private_token=GITLAB_TOKEN)
+    gl = gitlab.Gitlab(url=f"https://{GITLAB_URL}", private_token=GITLAB_TOKEN)
     gl.auth()
     project_name = repo_fullname.split('/')[-1]
-    gl_project_url = f'{GITLAB_URL[:URL_HDR_LEN]}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL[URL_HDR_LEN:]}/{GITLAB_NAMESPACE}/{project_name}.git'
+    gl_project_url = f'{GITLAB_URL}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL}/{GITLAB_NAMESPACE}/{project_name}.git'
 
     git = Git('.')
 
