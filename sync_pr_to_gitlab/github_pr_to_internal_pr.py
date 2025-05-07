@@ -62,7 +62,7 @@ def setup_project(repo_fullname, pr_base_branch):
     gl = gitlab.Gitlab(url=f"https://{GITLAB_URL}", private_token=GITLAB_TOKEN)
     gl.auth()
     project_name = repo_fullname.split('/')[-1]
-    gl_project_url = f'{GITLAB_URL}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL}/{GITLAB_NAMESPACE}/{project_name}.git'
+    gl_project_url = f'https://{GITLAB_URL}{GITLAB_TOKEN}:{GITLAB_TOKEN}@{GITLAB_URL}/{GITLAB_NAMESPACE}/{project_name}.git'
 
     git = Git('.')
 
