@@ -1,39 +1,31 @@
 <div align="center">
-  <h1>GitHub PR to Gitlab MR Sync (GitHub Action)</h1>
-
-  <br>
-  <br>
-  <!-- GitHub Badges -->
-   <img alt="release" src="https://img.shields.io/github/v/release/OpenSifli/sync-pr-to-gitlab" />
-   <img alt="codeql" src="https://github.com/OpenSifli/sync-pr-to-gitlab/actions/workflows/github-code-scanning/codeql/badge.svg?branch=v1" />
+  <h1>GitHub PR to GitLab MR Sync (GitHub Action)</h1>
 </div>
-GitHub PR to Gitlab MR Sync Action is a solution for one-way synchronization of GitHub PRs into SiFli Gitlab MRs.
-<br>
-<br>
-This script automates the process of creating branches and PRs on the internal codebase of SiFli based on approved PRs on Github.
 
-<hr>
+Sync approved GitHub PRs to an internal GitLab codebase as Merge Requests.
+
+---
 
 - [Workflow Overview](#workflow-overview)
   - [Workflow File](#workflow-file)
-  - [Environment Variables and Secrets Configuration](#environment-variables-and-secrets-configuration)
-- [Steps to Sync a PR (by user)](#steps-to-sync-a-pr-by-user)
+  - [Inputs](#inputs)
+- [Steps to Sync a PR](#steps-to-sync-a-pr)
 - [Project Issues](#project-issues)
 - [Contributing](#contributing)
 
 ## Workflow Overview
 
-This document outlines the steps required to synchronize pull requests (PRs) using a specific GitHub Action. The process ensures the most recent changes are safely merged, rebased, or updated in your project repository.
+This GitHub Action synchronizes pull requests from GitHub to an internal
+GitLab instance. When a maintainer approves a PR by adding a label, the
+action creates a corresponding branch and MR on GitLab.
 
-To use this GitHub Action in your repository, you need to create the following:
+To use this action you need:
 
 - A workflow file
 - Issue/PR labels: `PR-Sync-Merge`, `PR-Sync-Rebase`, `PR-Sync-Update`
 - Action secrets
 
 ### Workflow File
-
-Below is an example of the workflow file:
 
 ```yaml
 # FILE: .github/workflows/pr_approved.yml
@@ -44,58 +36,49 @@ on:
     types: [labeled]
 
 jobs:
-  sync_prs_to_internal_codebase:
-    name: GitHub PR to Internal Codebase Sync
+  sync_prs:
+    name: GitHub PR to GitLab MR Sync
     runs-on: ubuntu-latest
-    if: (github.event.label.name == 'PR-Sync-Merge')   ||
-        (github.event.label.name == 'PR-Sync-Rebase')  ||
-        (github.event.label.name == 'PR-Sync-Update')
+    if: contains(fromJSON('["PR-Sync-Merge","PR-Sync-Rebase","PR-Sync-Update"]'), github.event.label.name)
     steps:
       - uses: actions/checkout@v4
 
-      - name: Sync approved PRs to internal codebase
-        uses: OpenSiFli/sync-pr-to-gitlab@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLAB_URL: ${{ secrets.GITLAB_URL }}
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-          GIT_CONFIG_NAME: ${{ secrets.GIT_CONFIG_NAME }}
-          GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
-          GITLAB_NAMESPACE: SOMENAMESPACE  # This is optional (defaults to 'OpenSiFli' if not present)
+      - name: Sync PR to GitLab
+        uses: <your-org>/sync-pr-to-gitlab@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          gitlab_url: ${{ secrets.GITLAB_URL }}
+          gitlab_token: ${{ secrets.GITLAB_TOKEN }}
+          git_config_name: ${{ secrets.GIT_CONFIG_NAME }}
+          git_config_email: ${{ secrets.GIT_CONFIG_EMAIL }}
+          # gitlab_namespace: MY_GROUP  # optional, defaults to GitHub org name
 ```
 
-### Environment Variables and Secrets Configuration
+### Inputs
 
-The GitHub PR to GitLab MR Sync workflow requires configuring specific environment variables and secrets to operate effectively.
+| Input              | Description                                                    | Required |
+| ------------------ | -------------------------------------------------------------- | -------- |
+| `github_token`     | GitHub token for API access                                    | Yes      |
+| `gitlab_url`       | GitLab instance host (e.g. `gitlab.example.com`)               | Yes      |
+| `gitlab_token`     | GitLab API access token                                        | Yes      |
+| `git_config_name`  | Git user.name for rebase commits                               | Yes      |
+| `git_config_email` | Git user.email for rebase commits                              | Yes      |
+| `gitlab_namespace` | GitLab namespace/group (defaults to GitHub org name)           | No       |
 
-Below is a detailed table outlining the necessary configurations:
+## Steps to Sync a PR
 
-| Variable/Secret    | Description                                                                | Requirement |
-| ------------------ | -------------------------------------------------------------------------- | ----------- |
-| `GITHUB_TOKEN`     | Automatically provided by GitHub to authorize actions.                     | Inherited   |
-| `GITLAB_URL`       | URL of the SiFli GitLab instance for API requests.                         | Mandatory   |
-| `GITLAB_TOKEN`     | Access token for creating MRs, comments, and updates in SiFli GitLab.      | Mandatory   |
-| `GIT_CONFIG_NAME`  | Username for Git commits when syncing, usually a bot name.                 | Mandatory   |
-| `GIT_CONFIG_EMAIL` | Email for Git commits when syncing, representing the bot email.            | Mandatory   |
-| `GITLAB_NAMESPACE` | Namespace in GitLab where the project is located. Defaults to 'OpenSiFli'. | Optional    |
+1. Add a comment `sha=<short-or-long-sha>` on the PR with the SHA of the latest commit you want to sync.
+2. Apply one of the following labels:
+   - `PR-Sync-Merge` — create an internal MR from the PR branch head.
+   - `PR-Sync-Rebase` — rebase the PR onto the latest base branch before creating the MR.
+   - `PR-Sync-Update` — force-push new commits to an existing internal branch.
 
-## Steps to Sync a PR (by user)
-
-1. **Initiate Sync**: Once a PR is reviewed and ready to merge, add a comment in the PR's discussion with the format `sha=1a2b3c4`. This comment should include the SHA1 hash (either long or short form) of the **most recent** commit you wish to merge or update. The `sha` acts as a marker for the action to identify the specific commit.
-
-2. **Label the PR**: Apply one of the following labels to the PR to trigger the syncing action:
-   - `PR-Sync-Merge`: Merges the PR by creating an internal PR from the GitHub PR branch head to the internal remote, aligning closely with the current default (`master`) branch. This method is preferred for new PRs.
-   - `PR-Sync-Rebase`: For older PRs, this label rebases the GitHub PR onto the latest internal master branch.
-   - `PR-Sync-Update`: Updates an internal PR with any new commits or changes on the PR's fork branch. To re-trigger the update workflow after its initial run, remove and then reapply the `PR-Sync-Update` label.
-
-> **Note**: Only contributors with access levels higher than [TRIAGE](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization) can apply these labels on GitHub.
-
----
+> Only contributors with [TRIAGE](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization) access or higher can apply labels.
 
 ## Project Issues
 
-If you encounter any issues, feel free to report them in the project's issues or create Pull Request with your suggestion.
+If you encounter any issues, feel free to report them in the project's issues or create a Pull Request with your suggestion.
 
 ## Contributing
 
-📘 If you are interested in contributing to this project, see the [project Contributing Guide](CONTRIBUTING.md).
+If you are interested in contributing to this project, see the [Contributing Guide](CONTRIBUTING.md).
