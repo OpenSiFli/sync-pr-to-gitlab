@@ -1,16 +1,13 @@
 [build-system]
-    requires = ["setuptools-scm>=8.0", "setuptools>=60"]
+    requires      = ["hatchling"]
+    build-backend = "hatchling.build"
 
 [project]
-    authors = [
-        { name = "Laukik Hase (Espressif Systems)", email = "laukik.hase@espressif.com" },
-        { name = "Tomas Sebestik (Espressif Systems)", email = "tomas.sebestik@espressif.com" },
-    ]
-    classifiers = ["Programming Language :: Python :: 3"]
-    description = "Espressif GitHub Actions for Sync approved PRs to internal codebase (Gitlab)"
-    dynamic = ["version"]
-    name = "sync-pr-to-gitlab"
-    readme = "README.md"
+    classifiers    = ["Programming Language :: Python :: 3"]
+    description    = "GitHub Action to sync approved PRs to an internal GitLab codebase"
+    name           = "sync-pr-to-gitlab"
+    version        = "2.0.0"
+    readme         = "README.md"
     requires-python = ">=3.11"
 
     dependencies = [
@@ -22,13 +19,9 @@
     [project.optional-dependencies]
         dev = [
             "commitizen",
-            "pip-tools~=7.3",
             "pre-commit>=3.3",
             "types-requests",
         ]
-
-[tool.setuptools_scm]
-    write_to = "sync_pr_to_gitlab/version.py"
 
 
 [tool.ruff]
