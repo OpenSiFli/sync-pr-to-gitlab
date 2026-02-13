@@ -20,7 +20,7 @@ def connect(cfg: Config, repo_fullname: str, pr_base_branch: str) -> gitlab.Gitl
     git = Git('.')
     print('Adding and fetching the internal remote...')
     git.remote('add', GITLAB_REMOTE, gl_project_url)
-    git.pull(GITLAB_REMOTE, pr_base_branch)
+    git.fetch(GITLAB_REMOTE, pr_base_branch)
 
     return gl
 

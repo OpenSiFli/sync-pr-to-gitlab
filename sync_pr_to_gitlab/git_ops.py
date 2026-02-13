@@ -46,7 +46,7 @@ def rebase_and_amend(pr_base_branch: str, pr_html_url: str) -> None:
 
     git = Git('.')
     print(f'Rebasing with the latest {pr_base_branch} branch...')
-    git.rebase(pr_base_branch)
+    git.rebase(f'{GITLAB_REMOTE}/{pr_base_branch}')
 
     commit = repo.head.commit
     new_msg = f'{commit.message}\n\nCloses {pr_html_url}'
