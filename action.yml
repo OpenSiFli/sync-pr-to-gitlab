@@ -1,8 +1,54 @@
 name: "Sync approved PRs to internal codebase"
-description: "Sync approved Github PRs to the Espressif's internal IDF integration"
+description: "Sync approved GitHub PRs to an internal GitLab codebase"
 branding:
   icon: "fast-forward"
   color: "green"
+
+inputs:
+  github_token:
+    description: "GitHub token for API access"
+    required: true
+  gitlab_url:
+    description: "GitLab instance URL (host only, e.g. gitlab.example.com)"
+    required: true
+  gitlab_token:
+    description: "GitLab API access token"
+    required: true
+  gitlab_namespace:
+    description: "GitLab namespace/group for the project (defaults to GitHub org)"
+    required: false
+    default: ""
+  git_config_name:
+    description: "Git user.name for rebase commits"
+    required: true
+  git_config_email:
+    description: "Git user.email for rebase commits"
+    required: true
+
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: uv sync --frozen
+
+    - name: Run sync
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLAB_URL: ${{ inputs.gitlab_url }}
+        GITLAB_TOKEN: ${{ inputs.gitlab_token }}
+        GITLAB_NAMESPACE: ${{ inputs.gitlab_namespace }}
+        GIT_CONFIG_NAME: ${{ inputs.git_config_name }}
+        GIT_CONFIG_EMAIL: ${{ inputs.git_config_email }}
+      run: uv run python -m sync_pr_to_gitlab
