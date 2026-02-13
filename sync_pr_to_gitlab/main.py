@@ -72,6 +72,10 @@ def main() -> None:
         print('Not running in GitHub action context, nothing to do')
         return
 
+    github_workspace = os.environ.get('GITHUB_WORKSPACE')
+    if github_workspace and os.path.exists(os.path.join(github_workspace, '.git')):
+        os.chdir(github_workspace)
+
     cfg = Config.from_env()
 
     with open(os.environ['GITHUB_EVENT_PATH'], 'r', encoding='utf-8') as f:
