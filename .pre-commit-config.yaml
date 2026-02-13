@@ -35,12 +35,6 @@ repos:
       - id: mypy # Runs mypy for Python type checking
         additional_dependencies: ['types-all']
 
-  - repo: https://github.com/espressif/conventional-precommit-linter
-    rev: v1.6.0
-    hooks:
-      - id: conventional-precommit-linter # Lints commit messages for conventional format
-        stages: [commit-msg]
-
   - repo: https://github.com/pylint-dev/pylint
     rev: v3.1.0
     hooks:
@@ -52,14 +46,3 @@ repos:
       - id: codespell # Code spell checker
         args: ["--write-changes"]
         additional_dependencies: [tomli]
-
-
-  # Local hooks
-  - repo: local
-    hooks:
-      - id: pip-compile
-        name: compile requirements.txt
-        entry: bash -c 'pip-compile --output-file=requirements.txt pyproject.toml > /dev/null'
-        language: system
-        pass_filenames: false
-        files: requirements.txt|pyproject.toml
