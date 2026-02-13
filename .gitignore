@@ -5,7 +5,7 @@
 # cache
 .mypy_cache/
 .ruff_cache/
-__pycache__/*
+__pycache__/
 
 # virtual environment
 .venv/
