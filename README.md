@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Sync PR to GitLab
-        uses: <your-org>/sync-pr-to-gitlab@v2
+        uses: OpenSiFli/sync-pr-to-gitlab@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           gitlab_url: ${{ secrets.GITLAB_URL }}
