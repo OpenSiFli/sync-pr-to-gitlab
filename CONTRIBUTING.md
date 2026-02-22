@@ -14,6 +14,8 @@ We welcome contributions! To contribute to this repository, please read these in
 ## Code and Testing
 
 - **Pre-Commit Hooks:** Install with `pre-commit install`.
+- **CI Quality Gate:** GitHub Actions runs static quality checks on every PR and on push to `v2` with `.pre-commit-config-ci.yaml`.
+- **Run CI Checks Locally:** `pre-commit run --all-files --config .pre-commit-config-ci.yaml`.
 - **Readable Code Structure:** Keep the main logic in orchestration functions, with implementation details in helper modules. Avoid deeply nested conditionals.
 - **Remove Debug Statements:** Remove any development debug statements from your files.
 

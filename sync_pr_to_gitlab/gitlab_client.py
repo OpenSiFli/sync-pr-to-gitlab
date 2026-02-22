@@ -31,7 +31,7 @@ def get_project(gl: gitlab.Gitlab, cfg: Config, repo_fullname: str) -> gitlab.v4
     return gl.projects.get(f'{namespace}/{project_name}')
 
 
-def create_merge_request(
+def create_merge_request(  # pylint: disable=too-many-arguments
     project: gitlab.v4.objects.Project,
     pr_head_branch: str,
     pr_base_branch: str,

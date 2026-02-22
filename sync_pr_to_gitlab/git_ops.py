@@ -4,7 +4,6 @@ import os
 
 from git import Git
 from git import Repo
-from gitlab.exceptions import GitlabGetError
 
 GITHUB_REMOTE = 'origin'
 GITLAB_REMOTE = 'gitlab'

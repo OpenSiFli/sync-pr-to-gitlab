@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 
+import gitlab
 from gitlab.exceptions import GitlabGetError
 
 from sync_pr_to_gitlab.config import Config
@@ -29,11 +30,11 @@ def _check_update_label(pr_labels_list: list[dict]) -> None:
         raise RuntimeError('PR-Sync-Update Label: Illegal use!')
 
 
-def _sync_pr(
+def _sync_pr(  # pylint: disable=too-many-arguments
     pr_num: int,
     pr_head_branch: str,
     pr_commit_id: str,
-    project: object,
+    project: gitlab.v4.objects.Project,
     pr_base_branch: str,
     pr_html_url: str,
     rebase_flag: bool,
@@ -55,7 +56,7 @@ def _sync_pr(
     push_to_gitlab(pr_head_branch)
 
 
-def _update_mr(pr_num: int, pr_head_branch: str, pr_commit_id: str, project: object) -> None:
+def _update_mr(pr_num: int, pr_head_branch: str, pr_commit_id: str, project: gitlab.v4.objects.Project) -> None:
     try:
         project.branches.get(pr_head_branch)
     except Exception as exc:
@@ -78,8 +79,8 @@ def main() -> None:
 
     cfg = Config.from_env()
 
-    with open(os.environ['GITHUB_EVENT_PATH'], 'r', encoding='utf-8') as f:
-        event = json.load(f)
+    with open(os.environ['GITHUB_EVENT_PATH'], 'r', encoding='utf-8') as event_file:
+        event = json.load(event_file)
 
     pr_label = event['label']['name']
     pr_labels_list = event['pull_request']['labels']

@@ -61,7 +61,7 @@ def _build_sync_status_comment(
     )
 
 
-def replace_sync_status_comment(
+def replace_sync_status_comment(  # pylint: disable=too-many-arguments
     pr_comments_url: str,
     mode: str,
     github_pr_sha: str,
