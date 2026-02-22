@@ -10,7 +10,7 @@ SYNC_STATUS_MARKER = '<!-- sync-pr-to-gitlab:sync-status -->'
 
 
 def _auth_headers(github_token: str) -> dict[str, str]:
-    return {'Authorization': f'token {github_token}'}
+    return {'Authorization': f'Bearer {github_token}'}
 
 
 def validate_trigger_actor(pr_creator: str, pr_approve_labeller: str) -> None:
