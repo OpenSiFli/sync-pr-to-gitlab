@@ -1,3 +1,9 @@
+## Unreleased
+
+- feat: remove manual `sha=` comment requirement and use PR event `head.sha` by default
+- feat: auto-maintain structured PR sync-status comment after successful merge/rebase/update
+- change: fail sync when label-event SHA no longer matches current PR HEAD; re-apply label after new pushes
+
 ## v1.0.0 (2024-03-27)
 
 

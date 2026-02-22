@@ -67,13 +67,15 @@ jobs:
 
 ## Steps to Sync a PR
 
-1. Add a comment `sha=<short-or-long-sha>` on the PR with the SHA of the latest commit you want to sync.
-2. Apply one of the following labels:
+1. Apply one of the following labels:
    - `PR-Sync-Merge` — create an internal MR from the PR branch head.
    - `PR-Sync-Rebase` — rebase the PR onto the latest base branch before creating the MR.
    - `PR-Sync-Update` — force-push new commits to an existing internal branch.
+2. The action automatically uses `pull_request.head.sha` from the label event and validates it against the current PR HEAD before sync.
+3. On successful sync, the action updates a managed PR comment with sync metadata (mode, SHA, target branch, trigger user, timestamp). On later updates, the previous managed comment is replaced.
 
 > Only contributors with [TRIAGE](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization) access or higher can apply labels.
+> If new commits are pushed after labeling, the workflow fails by design. Remove/re-apply the label to sync the latest reviewed commit.
 
 ## Project Issues
 

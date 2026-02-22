@@ -11,8 +11,9 @@ from sync_pr_to_gitlab.git_ops import fetch_pr
 from sync_pr_to_gitlab.git_ops import push_to_gitlab
 from sync_pr_to_gitlab.git_ops import rebase_and_amend
 from sync_pr_to_gitlab.git_ops import verify_commit_sha
-from sync_pr_to_gitlab.github_client import check_approver
 from sync_pr_to_gitlab.github_client import check_forbidden_files
+from sync_pr_to_gitlab.github_client import replace_sync_status_comment
+from sync_pr_to_gitlab.github_client import validate_trigger_actor
 from sync_pr_to_gitlab.gitlab_client import connect
 from sync_pr_to_gitlab.gitlab_client import create_merge_request
 from sync_pr_to_gitlab.gitlab_client import get_project
@@ -29,7 +30,6 @@ def _check_update_label(pr_labels_list: list[dict]) -> None:
 
 
 def _sync_pr(
-    cfg: Config,
     pr_num: int,
     pr_head_branch: str,
     pr_commit_id: str,
@@ -86,8 +86,10 @@ def main() -> None:
 
     pr_approve_labeller = event['sender']['login']
     pr_creator = event['pull_request']['user']['login']
+    validate_trigger_actor(pr_creator, pr_approve_labeller)
+
     pr_comments_url = event['pull_request']['comments_url']
-    pr_commit_id = check_approver(pr_creator, pr_comments_url, pr_approve_labeller, cfg.github_token)
+    pr_commit_id = str(event['pull_request']['head']['sha'])
 
     repo_fullname = event['repository']['full_name']
 
@@ -107,16 +109,34 @@ def main() -> None:
     project = get_project(gl, cfg, repo_fullname)
 
     if pr_label == LABEL_REBASE:
-        _sync_pr(cfg, pr_num, pr_head_branch, pr_commit_id, project, pr_base_branch, pr_html_url, rebase_flag=True)
+        _sync_pr(pr_num, pr_head_branch, pr_commit_id, project, pr_base_branch, pr_html_url, rebase_flag=True)
     elif pr_label == LABEL_MERGE:
-        _sync_pr(cfg, pr_num, pr_head_branch, pr_commit_id, project, pr_base_branch, pr_html_url, rebase_flag=False)
+        _sync_pr(pr_num, pr_head_branch, pr_commit_id, project, pr_base_branch, pr_html_url, rebase_flag=False)
     elif pr_label == LABEL_UPDATE:
         _check_update_label(pr_labels_list)
         _update_mr(pr_num, pr_head_branch, pr_commit_id, project)
+        replace_sync_status_comment(
+            pr_comments_url,
+            pr_label,
+            pr_commit_id,
+            pr_base_branch,
+            pr_head_branch,
+            pr_approve_labeller,
+            cfg.github_token,
+        )
         print('Done with the workflow!')
         return
     else:
         raise RuntimeError('Illegal program flow!')
 
     create_merge_request(project, pr_head_branch, pr_base_branch, pr_title, pr_body, pr_html_url)
+    replace_sync_status_comment(
+        pr_comments_url,
+        pr_label,
+        pr_commit_id,
+        pr_base_branch,
+        pr_head_branch,
+        pr_approve_labeller,
+        cfg.github_token,
+    )
     print('Done with the workflow!')

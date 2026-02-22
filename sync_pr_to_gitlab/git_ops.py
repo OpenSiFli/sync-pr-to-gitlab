@@ -23,11 +23,11 @@ def checkout_pr_branch(pr_head_branch: str) -> None:
 
 
 def verify_commit_sha(pr_commit_id: str) -> None:
-    print('Checking whether specified commit ID matches with user branch HEAD...')
+    print('Checking whether event commit ID matches current PR HEAD...')
     git = Git('.')
-    expected = git.rev_parse('--short', 'HEAD')
-    if not pr_commit_id.startswith(expected):
-        raise RuntimeError('PR Commit SHA1 in workflow comment and user branch do not match!')
+    expected_commit = git.rev_parse('HEAD')
+    if not (pr_commit_id.startswith(expected_commit) or expected_commit.startswith(pr_commit_id)):
+        raise RuntimeError('PR commit SHA from label event does not match current PR HEAD. Re-apply label after latest push.')
 
 
 def push_to_gitlab(pr_head_branch: str, force: bool = False) -> None:
