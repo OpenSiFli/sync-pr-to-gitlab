@@ -89,10 +89,16 @@ def check_forbidden_files(pr_files_url: str, github_token: str) -> None:
     res.raise_for_status()
     r_data = res.json()
 
+    allowed_files = {'.github/dependabot.yml'}
+
     pr_files = [
         file_info['filename']
         for file_info in r_data
-        if '.gitlab' in file_info['filename'] or '.github' in file_info['filename']
+        if file_info['filename'] not in allowed_files
+        and (
+            '.gitlab' in file_info['filename']
+            or '.github' in file_info['filename']
+        )
     ]
     if pr_files:
         raise RuntimeError('PR modifying forbidden files!!!')
